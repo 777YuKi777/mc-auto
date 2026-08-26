@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MC Auto Multimarcas | Seminovos de Procedência</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0a0a;
+    --bg-soft:#0e0d0d;
+    --surface:#161414;
+    --surface-2:#1e1a1a;
+    --line:#332727;
+    --line-soft:#231d1d;
+    --text:#f5efec;
+    --muted:#a89f9d;
+    --muted-2:#786f6d;
+    --accent:#e4162b;
+    --accent-dim:#921522;
+    --accent-soft:rgba(228,22,43,0.14);
+    --radius:10px;
+    --font-display:'Oswald',sans-serif;
+    --font-body:'Inter',sans-serif;
+    --font-mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none;}
+  img{max-width:100%;display:block;}
+  button{font-family:inherit;cursor:pointer;}
+  ::selection{background:var(--accent);color:#0a0b0d;}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px;}
+
+  /* ---------- Texture ---------- */
+  .grain{
+    position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0.035;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- Nav ---------- */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(10,11,13,0.82);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line-soft);
+  }
+  nav.wrap{display:flex;align-items:center;justify-content:space-between;height:72px;}
+  .logo{
+    font-family:var(--font-display);font-weight:700;font-size:22px;letter-spacing:0.02em;
+    display:flex;align-items:center;gap:8px;
+  }
+  .logo .dot{color:var(--accent);}
+  .logo-img{height:38px;width:auto;display:block;}
+  .logo-fallback{display:none;}
+
+  .whatsapp-float{
+    position:fixed;right:22px;bottom:22px;z-index:60;
+    width:58px;height:58px;border-radius:50%;
+    background:var(--accent);display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 30px -8px rgba(228,22,43,0.6);
+    transition:transform .15s;
+  }
+  .whatsapp-float:hover{transform:scale(1.06);}
+  @media (max-width:600px){ .whatsapp-float{width:52px;height:52px;right:16px;bottom:16px;} }
+  .nav-links{display:flex;gap:32px;font-size:14px;color:var(--muted);}
+  .nav-links a{transition:color .2s;}
+  .nav-links a:hover{color:var(--text);}
+  .nav-cta{
+    background:var(--accent);color:#fdf1f1;font-weight:600;font-size:13px;
+    padding:11px 20px;border-radius:999px;border:none;letter-spacing:0.01em;
+    transition:transform .15s, box-shadow .15s;
+  }
+  .nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 24px -8px rgba(228,22,43,0.45);}
+  .nav-toggle{display:none;background:none;border:1px solid var(--line);color:var(--text);width:40px;height:40px;border-radius:8px;}
+
+  /* ---------- Hero ---------- */
+  .hero{padding:72px 0 40px;position:relative;z-index:1;}
+  .eyebrow{
+    font-family:var(--font-mono);font-size:12px;color:var(--accent);
+    letter-spacing:0.16em;text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:22px;
+  }
+  .eyebrow::before{content:'';width:26px;height:1px;background:var(--accent-dim);display:inline-block;}
+  h1.headline{
+    font-family:var(--font-display);font-weight:600;
+    font-size:clamp(38px,6vw,68px);line-height:1.02;letter-spacing:-0.01em;
+    margin:0 0 22px;max-width:820px;
+  }
+  h1.headline .typed{color:var(--accent);white-space:pre-wrap;}
+  .cursor{color:var(--accent);font-weight:400;}
+  .hero-sub{
+    font-size:17px;line-height:1.65;color:var(--muted);max-width:520px;margin:0 0 34px;
+  }
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;}
+  .btn-primary{
+    background:var(--accent);color:#fdf1f1;font-weight:600;font-size:15px;
+    padding:15px 26px;border-radius:8px;border:none;transition:transform .15s,box-shadow .15s;
+  }
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 28px -10px rgba(228,22,43,0.5);}
+  .btn-secondary{
+    background:transparent;color:var(--text);font-weight:600;font-size:15px;
+    padding:15px 26px;border-radius:8px;border:1px solid var(--line);transition:border-color .15s,background .15s;
+  }
+  .btn-secondary:hover{border-color:var(--muted-2);background:var(--surface);}
+  .hero-meta{display:flex;gap:28px;flex-wrap:wrap;margin-top:8px;}
+  .hero-meta div{font-family:var(--font-mono);font-size:12px;color:var(--muted-2);}
+  .hero-meta strong{display:block;font-family:var(--font-display);font-size:22px;color:var(--text);font-weight:600;}
+
+  /* ---------- Coverflow showroom ---------- */
+  .showroom{
+    position:relative;padding:10px 0 0;z-index:1;
+  }
+  .showroom-stage{
+    position:relative;width:100%;height:440px;
+    perspective:1600px;display:flex;align-items:center;justify-content:center;
+    overflow:hidden;
+  }
+  .showroom-floor{
+    position:absolute;left:0;right:0;bottom:0;height:160px;
+    background:radial-gradient(ellipse 60% 100% at 50% 0%, rgba(228,22,43,0.10), transparent 70%);
+    pointer-events:none;
+  }
+  .stage-inner{position:relative;width:520px;height:340px;transform-style:preserve-3d;}
+  .car-card{
+    position:absolute;left:50%;top:50%;width:520px;height:340px;
+    border-radius:16px;overflow:hidden;background:#111214;
+    transform-style:preserve-3d;transform-origin:center center;
+    transition:transform .6s cubic-bezier(0.22,1,0.36,1), opacity .6s cubic-bezier(0.22,1,0.36,1);
+    box-shadow:0 30px 60px -20px rgba(0,0,0,0.7);
+  }
+  .car-card.reduced-motion{transition:none;}
+  .car-card img{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;user-select:none;
+    -webkit-user-drag:none;
+  }
+  .car-card .dim{
+    position:absolute;inset:0;background:#000;pointer-events:none;transition:opacity .6s cubic-bezier(0.22,1,0.36,1);
+  }
+  .car-card .card-info{
+    position:absolute;left:0;right:0;bottom:0;padding:22px 26px;
+    background:linear-gradient(0deg, rgba(0,0,0,0.82) 10%, rgba(0,0,0,0) 75%);
+    pointer-events:none;
+  }
+  .car-card .tag{
+    font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;
+  }
+  .car-card .name{
+    font-family:var(--font-display);font-size:26px;font-weight:600;margin:4px 0 4px;letter-spacing:-0.01em;
+  }
+  .car-card .desc{font-size:13px;color:var(--muted);margin:0 0 8px;}
+  .car-card .price{font-family:var(--font-mono);font-size:16px;color:var(--text);font-weight:600;}
+
+  .showroom-controls{display:flex;align-items:center;justify-content:center;gap:22px;margin-top:26px;}
+  .gauge-btn{
+    width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);
+    color:var(--text);display:flex;align-items:center;justify-content:center;transition:border-color .15s, background .15s;
+    flex-shrink:0;
+  }
+  .gauge-btn:hover{border-color:var(--accent-dim);background:var(--surface-2);}
+  .gauge-ticks{display:flex;align-items:flex-end;gap:10px;height:30px;}
+  .tick{
+    width:3px;height:12px;background:var(--line);border-radius:2px;border:none;padding:0;
+    transition:height .25s, background .25s;
+  }
+  .tick.active{height:26px;background:var(--accent);}
+  .tick:hover{background:var(--muted-2);}
+
+  /* ---------- How it works ---------- */
+  section{padding:96px 0;position:relative;z-index:1;}
+  .section-head{max-width:560px;margin-bottom:52px;}
+  .section-label{
+    font-family:var(--font-mono);font-size:12px;color:var(--accent);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:14px;
+  }
+  h2{
+    font-family:var(--font-display);font-size:clamp(28px,3.6vw,40px);font-weight:600;letter-spacing:-0.01em;margin:0 0 12px;
+  }
+  .section-desc{color:var(--muted);font-size:15.5px;line-height:1.6;margin:0;}
+
+  .how-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);border-radius:14px;overflow:hidden;}
+  .step{background:var(--surface);padding:34px 30px;position:relative;}
+  .step .num{
+    font-family:var(--font-mono);font-size:13px;color:var(--accent-dim);letter-spacing:0.06em;
+    display:block;margin-bottom:18px;
+  }
+  .step h3{font-family:var(--font-display);font-size:20px;font-weight:600;margin:0 0 10px;}
+  .step p{color:var(--muted);font-size:14.5px;line-height:1.6;margin:0;}
+
+  /* ---------- Trust strip ---------- */
+  .trust{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:24px;
+  }
+  .trust-item{
+    border:1px solid var(--line-soft);border-radius:12px;padding:24px 20px;background:var(--surface);
+  }
+  .trust-item .ico{color:var(--accent);font-family:var(--font-mono);font-size:20px;margin-bottom:14px;display:block;}
+  .trust-item h4{font-size:15px;font-weight:600;margin:0 0 6px;font-family:var(--font-body);}
+  .trust-item p{font-size:13.5px;color:var(--muted);margin:0;line-height:1.55;}
+
+  /* ---------- Inventory ---------- */
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:36px;}
+  .chip{
+    padding:9px 18px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);
+    font-size:13.5px;font-weight:500;transition:all .15s;
+  }
+  .chip:hover{border-color:var(--muted-2);color:var(--text);}
+  .chip.active{background:var(--accent);border-color:var(--accent);color:#fdf1f1;}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .car-item{
+    border:1px solid var(--line-soft);border-radius:14px;overflow:hidden;background:var(--surface);
+    transition:transform .2s, border-color .2s;
+  }
+  .car-item:hover{transform:translateY(-4px);border-color:var(--line);}
+  .car-item .thumb{height:190px;overflow:hidden;position:relative;}
+  .car-item .thumb img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+  .car-item:hover .thumb img{transform:scale(1.06);}
+  .car-item .body{padding:20px 20px 22px;}
+  .car-item .cat{font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:0.08em;text-transform:uppercase;}
+  .car-item h3{font-family:var(--font-display);font-size:19px;font-weight:600;margin:6px 0 10px;}
+  .specs{display:flex;gap:14px;font-family:var(--font-mono);font-size:12px;color:var(--muted-2);margin-bottom:14px;flex-wrap:wrap;}
+  .car-item .foot{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line-soft);padding-top:14px;}
+  .car-item .price{font-family:var(--font-mono);font-weight:600;font-size:16px;}
+  .car-item .see{font-size:13px;color:var(--accent);font-weight:600;}
+
+  /* ---------- CTA band ---------- */
+  .cta-band{
+    border:1px solid var(--line-soft);border-radius:18px;padding:56px 48px;
+    background:linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+    display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;
+  }
+  .cta-band h2{margin:0 0 8px;max-width:420px;}
+  .cta-band p{color:var(--muted);margin:0;max-width:420px;}
+
+  /* ---------- Footer ---------- */
+  footer{border-top:1px solid var(--line-soft);padding:56px 0 34px;}
+  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px;margin-bottom:44px;}
+  .foot-col h5{font-size:13px;color:var(--muted-2);text-transform:uppercase;letter-spacing:0.08em;margin:0 0 16px;font-weight:600;}
+  .foot-col a, .foot-col p{display:block;font-size:14px;color:var(--muted);margin-bottom:10px;line-height:1.5;}
+  .foot-col a:hover{color:var(--text);}
+  .foot-bottom{
+    display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid var(--line-soft);
+    font-size:12.5px;color:var(--muted-2);flex-wrap:wrap;gap:12px;
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:900px){
+    .nav-links{display:none;}
+    .how-steps{grid-template-columns:1fr;}
+    .trust{grid-template-columns:repeat(2,1fr);}
+    .grid{grid-template-columns:repeat(2,1fr);}
+    .foot-grid{grid-template-columns:1fr 1fr;}
+    .showroom-stage{height:340px;}
+    .stage-inner, .car-card{width:340px;height:230px;}
+  }
+  @media (max-width:600px){
+    .wrap{padding:0 18px;}
+    .trust{grid-template-columns:1fr;}
+    .grid{grid-template-columns:1fr;}
+    .foot-grid{grid-template-columns:1fr;}
+    .cta-band{flex-direction:column;align-items:flex-start;padding:36px 26px;}
+    .nav-toggle{display:block;}
+    .showroom-stage{height:270px;}
+    .stage-inner, .car-card{width:250px;height:170px;}
+    .car-card .name{font-size:19px;}
+    .car-card .desc{display:none;}
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<header>
+  <nav class="wrap">
+    <a href="#" class="logo" aria-label="MC Auto Multimarcas">
+      <img class="logo-img" src="assets/logotipos/logo.png" alt="MC Auto Multimarcas"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <span class="logo-fallback">MC AUTO<span class="dot">.</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#estoque">Estoque</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#garantias">Garantias</a>
+      <a href="#contato">Contato</a>
+    </div>
+    <a class="nav-cta" href="https://api.whatsapp.com/send/?phone=5535998122386&text&type=phone_number&app_absent=0&utm_source=ig" target="_blank" rel="noopener">Falar no WhatsApp</a>
+  </nav>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero" style="padding-bottom:0;">
+    <div class="wrap">
+      <div class="eyebrow">MC Auto Multimarcas · Seminovos de procedência</div>
+      <h1 class="headline">Encontre seu próximo<br><span class="typed" id="typed"></span><span class="cursor" id="cursor">_</span></h1>
+      <p class="hero-sub">Carros de procedência checada, com histórico aberto e revisão completa antes da entrega. Você escolhe, a gente cuida da burocracia.</p>
+      <div class="hero-actions">
+        <a href="#estoque" class="btn-primary">Ver estoque completo</a>
+        <a href="#como-funciona" class="btn-secondary">Simular financiamento</a>
+      </div>
+      <div class="hero-meta">
+        <div><strong>312</strong>carros no pátio</div>
+        <div><strong>12 meses</strong>de garantia</div>
+        <div><strong>4.8/5</strong>avaliação dos clientes</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOWROOM COVERFLOW -->
+  <section class="showroom" aria-label="Vitrine de destaques">
+    <div class="showroom-stage" id="stage">
+      <div class="showroom-floor"></div>
+      <div class="stage-inner" id="stageInner"></div>
+    </div>
+    <div class="showroom-controls">
+      <button class="gauge-btn" id="prevBtn" aria-label="Carro anterior">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="gauge-ticks" id="ticks"></div>
+      <button class="gauge-btn" id="nextBtn" aria-label="Próximo carro">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="como-funciona">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-label">Como funciona</div>
+        <h2>Da escolha até a garagem em três passos</h2>
+        <p class="section-desc">Sem visitas repetidas, sem letra miúda. O processo todo é feito para caber numa tarde.</p>
+      </div>
+      <div class="how-steps">
+        <div class="step">
+          <span class="num">01 · Escolha</span>
+          <h3>Filtre por categoria</h3>
+          <p>Veja fotos reais, quilometragem e histórico de manutenção de cada carro antes de agendar qualquer coisa.</p>
+        </div>
+        <div class="step">
+          <span class="num">02 · Simule</span>
+          <h3>Financiamento na hora</h3>
+          <p>Informe a entrada desejada e veja as parcelas com taxa fechada, sem precisar sair de casa.</p>
+        </div>
+        <div class="step">
+          <span class="num">03 · Retire</span>
+          <h3>Leve para casa</h3>
+          <p>Retire na loja ou receba na sua garagem em até 5 dias úteis, com o carro já emplacado.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST -->
+  <section id="garantias" style="padding-top:0;">
+    <div class="wrap">
+      <div class="trust">
+        <div class="trust-item">
+          <span class="ico">✓</span>
+          <h4>Garantia de 12 meses</h4>
+          <p>Motor e câmbio cobertos, sem custo extra, em toda a loja.</p>
+        </div>
+        <div class="trust-item">
+          <span class="ico">↻</span>
+          <h4>Revisão antes da entrega</h4>
+          <p>Todo carro passa por checklist de 112 itens antes de sair do pátio.</p>
+        </div>
+        <div class="trust-item">
+          <span class="ico">§</span>
+          <h4>Documentação inclusa</h4>
+          <p>IPVA do ano e transferência já saem prontos, sem fila no Detran.</p>
+        </div>
+        <div class="trust-item">
+          <span class="ico">⇄</span>
+          <h4>Aceita seu usado</h4>
+          <p>Avaliação do seu carro atual na hora, direto no abatimento.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INVENTORY -->
+  <section id="estoque">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-label">Estoque desta semana</div>
+        <h2>Seis carros, seis perfis diferentes</h2>
+        <p class="section-desc">Do compacto do dia a dia ao esportivo de fim de semana — filtre por categoria para ver mais rápido.</p>
+      </div>
+      <div class="filters" id="filters">
+        <button class="chip active" data-filter="todos">Todos</button>
+        <button class="chip" data-filter="sedan">Sedã</button>
+        <button class="chip" data-filter="suv">SUV</button>
+        <button class="chip" data-filter="eletrico">Elétrico</button>
+        <button class="chip" data-filter="esportivo">Esportivo</button>
+        <button class="chip" data-filter="compacto">Compacto</button>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="padding-top:0;">
+    <div class="wrap">
+      <div class="cta-band">
+        <div>
+          <h2>Não achou o carro ideal?</h2>
+          <p>Chame um consultor no WhatsApp, conte o que você procura e a gente avisa assim que chegar um carro assim no pátio.</p>
+        </div>
+        <a href="https://api.whatsapp.com/send/?phone=5535998122386&text&type=phone_number&app_absent=0&utm_source=ig" target="_blank" rel="noopener" class="btn-primary">Falar com um consultor</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="contato">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-col">
+        <div class="logo" style="margin-bottom:14px;">
+          <img class="logo-img" src="assets/logotipos/logo.png" alt="MC Auto Multimarcas"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <span class="logo-fallback">MC AUTO<span class="dot">.</span></span>
+        </div>
+        <p style="max-width:260px;">Seminovos de procedência, com histórico checado e entrega para toda a região.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Loja</h5>
+        <a href="#estoque">Estoque</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#garantias">Garantias</a>
+      </div>
+      <div class="foot-col">
+        <h5>Contato</h5>
+        <a href="https://api.whatsapp.com/send/?phone=5535998122386&text&type=phone_number&app_absent=0&utm_source=ig" target="_blank" rel="noopener">(35) 99812-2386</a>
+        <a href="mailto:contato@mcautomultimarcas.com.br">contato@mcautomultimarcas.com.br</a>
+        <p>Seg a sáb, 9h às 18h</p>
+      </div>
+      <div class="foot-col">
+        <h5>Redes</h5>
+        <a href="#">Instagram</a>
+        <a href="https://api.whatsapp.com/send/?phone=5535998122386&text&type=phone_number&app_absent=0&utm_source=ig" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="#">YouTube</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 MC Auto Multimarcas. Todos os direitos reservados.</span>
+      <span>Site conceito — imagens ilustrativas.</span>
+    </div>
+  </div>
+</footer>
+
+<a class="whatsapp-float" href="https://api.whatsapp.com/send/?phone=5535998122386&text&type=phone_number&app_absent=0&utm_source=ig" target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="#fdf1f1"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.33 4.95L2 22l5.28-1.38a9.9 9.9 0 0 0 4.76 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.02c-.24.68-1.4 1.3-1.93 1.38-.5.08-1.13.11-1.83-.12-.42-.13-.96-.31-1.66-.6-2.92-1.26-4.83-4.19-4.98-4.39-.15-.2-1.19-1.58-1.19-3.01 0-1.43.75-2.13 1.02-2.42.27-.29.58-.36.78-.36.2 0 .39 0 .56.01.18.01.42-.07.65.5.24.58.82 2 .89 2.15.07.15.12.32.02.52-.1.2-.15.32-.3.49-.15.17-.3.38-.44.51-.15.15-.3.31-.13.6.17.29.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.35 1.46.29.15.46.13.63-.08.17-.2.72-.84.91-1.13.19-.29.38-.24.63-.15.25.1 1.6.75 1.87.89.27.14.45.2.52.32.07.11.07.65-.17 1.31Z"/></svg>
+</a>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------------- Typewriter ---------------- */
+  var words = ["sedã.", "SUV.", "elétrico.", "esportivo.", "compacto."];
+  var typedEl = document.getElementById('typed');
+  var cursorEl = document.getElementById('cursor');
+
+  if(reduced){
+    typedEl.textContent = words[0];
+  } else {
+    var wi = 0, ci = 0, deleting = false;
+    function tick(){
+      var current = words[wi];
+      if(!deleting){
+        ci++;
+        typedEl.textContent = current.slice(0, ci);
+        if(ci === current.length){
+          deleting = true;
+          setTimeout(tick, 1500);
+          return;
+        }
+        setTimeout(tick, 65);
+      } else {
+        ci--;
+        typedEl.textContent = current.slice(0, ci);
+        if(ci === 0){
+          deleting = false;
+          wi = (wi + 1) % words.length;
+          setTimeout(tick, 300);
+          return;
+        }
+        setTimeout(tick, 32);
+      }
+    }
+    tick();
+    setInterval(function(){
+      cursorEl.style.opacity = cursorEl.style.opacity === '0' ? '1' : '0';
+    }, 500);
+  }
+
+  /* ---------------- Coverflow showroom ---------------- */
+  var cars = [
+    {
+      cat:'sedan', tagLabel:'Sedã Executivo', name:'Sedã Executivo',
+      desc:'Conforto para rodar a semana toda', price:'R$ 129.900',
+      img:'assets/carros/carro1/carro.png',
+      fallback:'https://images.unsplash.com/photo-1764605206511-7a649d9df63b?fm=jpg&q=70&w=1200&auto=format&fit=crop',
+      km:'38.200 km', ano:'2022', cambio:'Automático'
+    },
+    {
+      cat:'eletrico', tagLabel:'SUV Elétrico', name:'SUV Elétrico',
+      desc:'Autonomia real, zero combustível', price:'R$ 249.900',
+      img:'assets/carros/carro2/carro.png',
+      fallback:'https://images.unsplash.com/photo-1750830331454-86df5c088ca7?fm=jpg&q=70&w=1200&auto=format&fit=crop',
+      km:'12.100 km', ano:'2024', cambio:'Automático'
+    },
+    {
+      cat:'esportivo', tagLabel:'Esportivo', name:'Esportivo',
+      desc:'Para quem não abre mão de personalidade', price:'R$ 389.900',
+      img:'assets/carros/carro3/carro.png',
+      fallback:'https://images.unsplash.com/photo-1760520830355-e6be53e41c2f?fm=jpg&q=70&w=1200&auto=format&fit=crop',
+      km:'8.700 km', ano:'2023', cambio:'Automático'
+    },
+    {
+      cat:'compacto', tagLabel:'Compacto Urbano', name:'Compacto Urbano',
+      desc:'Ágil no trânsito, leve no bolso', price:'R$ 79.900',
+      img:'assets/carros/carro4/carro.png',
+      fallback:'https://images.unsplash.com/photo-1711523164285-71e1dbb948ca?fm=jpg&q=70&w=1200&auto=format&fit=crop',
+      km:'54.300 km', ano:'2021', cambio:'Manual'
+    },
+    {
+      cat:'suv', tagLabel:'SUV Premium', name:'SUV Premium',
+      desc:'Espaço e presença para a família', price:'R$ 219.900',
+      img:'assets/carros/carro5/carro.png',
+      fallback:'https://images.unsplash.com/photo-1722385640799-4ee84eb90038?fm=jpg&q=70&w=1200&auto=format&fit=crop',
+      km:'22.400 km', ano:'2023', cambio:'Automático'
+    },
+    {
+      cat:'suv', tagLabel:'SUV Família', name:'SUV Família',
+      desc:'Tração e porte para qualquer terreno', price:'R$ 259.900',
+      img:'assets/carros/carro6/carro.png',
+      fallback:'https://images.unsplash.com/photo-1699506612941-9282c50c374d?fm=jpg&q=70&w=1200&auto=format&fit=crop',
+      km:'17.900 km', ano:'2024', cambio:'Automático'
+    }
+  ];
+
+  var stageInner = document.getElementById('stageInner');
+  var ticksWrap = document.getElementById('ticks');
+  var active = 0;
+  var n = cars.length;
+  var locked = false;
+  var cardEls = [];
+
+  cars.forEach(function(car, i){
+    var el = document.createElement('div');
+    el.className = 'car-card' + (reduced ? ' reduced-motion' : '');
+    el.innerHTML =
+      '<img src="'+car.img+'" alt="'+car.name+'" draggable="false" onerror="this.onerror=null;this.src=\''+car.fallback+'\';">' +
+      '<div class="dim"></div>' +
+      '<div class="card-info">' +
+        '<div class="tag">'+car.tagLabel+'</div>' +
+        '<div class="name">'+car.name+'</div>' +
+        '<p class="desc">'+car.desc+'</p>' +
+        '<div class="price">'+car.price+'</div>' +
+      '</div>';
+    el.addEventListener('click', function(){ goTo(i); });
+    stageInner.appendChild(el);
+    cardEls.push(el);
+
+    var tick = document.createElement('button');
+    tick.className = 'tick' + (i === 0 ? ' active' : '');
+    tick.setAttribute('aria-label', 'Ir para ' + car.name);
+    tick.addEventListener('click', function(){ goTo(i); });
+    ticksWrap.appendChild(tick);
+  });
+
+  function render(){
+    cardEls.forEach(function(el, i){
+      var rel = i - active;
+      if(rel > n/2) rel -= n;
+      if(rel < -n/2) rel += n;
+      var ax = Math.abs(rel);
+      var isActive = rel === 0;
+      var visible = ax <= 2;
+      var scale = Math.max(0.4, 1 - ax * 0.18);
+      var tx = rel * 210;
+      var tz = -ax * 220;
+      var ry = -rel * 8;
+      el.style.transform = 'translate(-50%, -50%) translateX('+tx+'px) translateZ('+tz+'px) rotateY('+ry+'deg) scale('+scale+')';
+      el.style.opacity = visible ? '1' : '0';
+      el.style.pointerEvents = (visible && !isActive) ? 'auto' : (isActive ? 'none' : 'none');
+      el.style.cursor = isActive ? 'default' : 'pointer';
+      el.querySelector('.dim').style.opacity = isActive ? '0' : '0.55';
+    });
+    Array.prototype.forEach.call(ticksWrap.children, function(t, i){
+      t.classList.toggle('active', i === active);
+    });
+  }
+
+  function goTo(i){
+    if(locked) return;
+    active = i;
+    render();
+    locked = true;
+    setTimeout(function(){ locked = false; }, reduced ? 60 : 620);
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', function(){
+    goTo((active - 1 + n) % n);
+  });
+  document.getElementById('nextBtn').addEventListener('click', function(){
+    goTo((active + 1) % n);
+  });
+
+  render();
+
+  if(!reduced){
+    var stage = document.getElementById('stage');
+    var autoplayId = setInterval(function(){ goTo((active + 1) % n); }, 4200);
+    stage.addEventListener('mouseenter', function(){ clearInterval(autoplayId); });
+    stage.addEventListener('mouseleave', function(){
+      autoplayId = setInterval(function(){ goTo((active + 1) % n); }, 4200);
+    });
+  }
+
+  /* touch swipe */
+  (function(){
+    var startX = null;
+    var stage = document.getElementById('stage');
+    stage.addEventListener('touchstart', function(e){ startX = e.touches[0].clientX; }, {passive:true});
+    stage.addEventListener('touchend', function(e){
+      if(startX === null) return;
+      var dx = e.changedTouches[0].clientX - startX;
+      if(Math.abs(dx) > 40){
+        goTo(dx < 0 ? (active + 1) % n : (active - 1 + n) % n);
+      }
+      startX = null;
+    });
+  })();
+
+  /* ---------------- Inventory grid ---------------- */
+  var grid = document.getElementById('grid');
+  var catLabels = {sedan:'Sedã', suv:'SUV', eletrico:'Elétrico', esportivo:'Esportivo', compacto:'Compacto'};
+
+  function renderGrid(filter){
+    grid.innerHTML = '';
+    cars.forEach(function(car){
+      if(filter !== 'todos' && car.cat !== filter) return;
+      var item = document.createElement('div');
+      item.className = 'car-item';
+      item.innerHTML =
+        '<div class="thumb"><img src="'+car.img+'" alt="'+car.name+'" loading="lazy" onerror="this.onerror=null;this.src=\''+car.fallback+'\';"></div>' +
+        '<div class="body">' +
+          '<div class="cat">'+catLabels[car.cat]+'</div>' +
+          '<h3>'+car.name+'</h3>' +
+          '<div class="specs"><span>'+car.ano+'</span><span>'+car.km+'</span><span>'+car.cambio+'</span></div>' +
+          '<div class="foot"><span class="price">'+car.price+'</span><span class="see">Ver detalhes →</span></div>' +
+        '</div>';
+      grid.appendChild(item);
+    });
+  }
+  renderGrid('todos');
+
+  var chips = document.querySelectorAll('.chip');
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      chips.forEach(function(c){ c.classList.remove('active'); });
+      chip.classList.add('active');
+      renderGrid(chip.getAttribute('data-filter'));
+    });
+  });
+})();
+</script>
+</body>
+</html>
